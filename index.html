@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ayush Kumawat - Civil Engineering & Architectural Portfolio. An immersive structural construction journey.">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>THE BUILDING OF AYUSH | Civil Engineering Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="architectural-mode">
+
+    <a class="skip-link" href="#scroll-timeline">Skip to portfolio content</a>
+
+    <!-- ==================================================
+         SYSTEM INITIALIZATION & LOADING
+    ================================================== -->
+    <div id="loading-overlay" role="status" aria-live="polite">
+        <div class="loader-content">
+            <h1 class="loader-title">THE BUILDING OF AYUSH</h1>
+            <h2 class="loader-subtitle">PROJECT INITIALIZATION</h2>
+            <div class="loader-diagnostics">
+                <p>LOADING ARCHITECTURAL MODELS... <span id="load-arch" class="load-status">0%</span></p>
+                <p>GENERATING TOPOGRAPHY... <span id="load-topo" class="load-status">0%</span></p>
+                <p>CALCULATING STRUCTURAL GRID... <span id="load-grid" class="load-status">0%</span></p>
+            </div>
+            <div class="progress-track">
+                <div id="master-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================================================
+         3D WEBGL VIEWPORT
+    ================================================== -->
+    <div id="webgl-container" aria-hidden="true"></div>
+
+    <!-- ==================================================
+         SEMANTIC ENGINEERING / ARCHITECTURAL HOOKS
+    ================================================== -->
+    <div id="structural-data-hooks" aria-hidden="true" style="display: none;">
+        <!-- Foundations -->
+        <div id="layer-foundation" data-stage="foundation"></div>
+        <div id="layer-pile-system" data-stage="foundation"></div>
+        
+        <!-- Frame Elements -->
+        <div id="layer-reinforcement" data-stage="rebar"></div>
+        <div id="layer-columns" data-stage="concrete-vertical"></div>
+        <div id="layer-beams" data-stage="concrete-horizontal"></div>
+        <div id="layer-slabs" data-stage="concrete-horizontal"></div>
+        
+        <!-- Core Elements -->
+        <div id="layer-core" data-stage="core"></div>
+        <div id="layer-staircase" data-stage="core"></div>
+        <div id="layer-elevator-shaft" data-stage="core"></div>
+        <div id="layer-shear-walls" data-stage="core"></div>
+        
+        <!-- Temporary Structures -->
+        <div id="layer-formwork-cols" data-stage="temporary"></div>
+        <div id="layer-formwork-slabs" data-stage="temporary"></div>
+        <div id="layer-scaffolding" data-stage="temporary"></div>
+        <div id="layer-safety-barriers" data-stage="temporary"></div>
+        <div id="layer-temp-lighting" data-stage="temporary"></div>
+        
+        <!-- Envelope & Finishes -->
+        <div id="layer-facade-structure" data-stage="facade"></div>
+        <div id="layer-glazing" data-stage="facade"></div>
+        <div id="layer-balconies" data-stage="facade"></div>
+        <div id="layer-parapets" data-stage="roof"></div>
+        <div id="layer-roof" data-stage="roof"></div>
+        <div id="layer-mep-zones" data-stage="services"></div>
+        
+        <!-- Site & Logistics -->
+        <div id="layer-tower-crane" data-stage="equipment"></div>
+        <div id="layer-material-hoist" data-stage="equipment"></div>
+        <div id="layer-construction-vehicles" data-stage="equipment"></div>
+        <div id="layer-concrete-mixer" data-stage="equipment"></div>
+        <div id="layer-rebar-storage" data-stage="logistics"></div>
+        <div id="layer-formwork-storage" data-stage="logistics"></div>
+        <div id="layer-site-office" data-stage="logistics"></div>
+        <div id="layer-site-signage" data-stage="logistics"></div>
+        <div id="layer-workers" data-stage="personnel"></div>
+        <div id="layer-dust-particles" data-stage="vfx"></div>
+
+        <!-- Workflow Triggers -->
+        <div id="workflow-survey" data-sequence="01"></div>
+        <div id="workflow-rebar-cage" data-sequence="02"></div>
+        <div id="workflow-column-formwork" data-sequence="03"></div>
+        <div id="workflow-concrete-cast" data-sequence="04"></div>
+        <div id="workflow-curing" data-sequence="05"></div>
+        <div id="workflow-beam-rebar" data-sequence="06"></div>
+        <div id="workflow-beam-formwork" data-sequence="07"></div>
+        <div id="workflow-slab-formwork" data-sequence="08"></div>
+        <div id="workflow-slab-rebar" data-sequence="09"></div>
+        <div id="workflow-slab-cast" data-sequence="10"></div>
+        <div id="workflow-formwork-removal" data-sequence="11"></div>
+        <div id="workflow-equipment-movement" data-sequence="12"></div>
+    </div>
+
+    <!-- ==================================================
+         SOPHISTICATED ENGINEERING HUD
+    ================================================== -->
+    <header id="engineering-hud">
+        <div class="hud-top-bar">
+            <div class="hud-branding">
+                <span class="hud-label">PROJECT</span>
+                <span class="hud-value">AYUSH KUMAWAT</span>
+            </div>
+            <div class="hud-meta">
+                <div class="hud-data-group">
+                    <span class="hud-label">PROJECT TYPE</span>
+                    <span class="hud-value">ARCHITECTURAL + STRUCTURAL</span>
+                </div>
+                <div class="hud-data-group">
+                    <span class="hud-label">STRUCTURAL SYSTEM</span>
+                    <span class="hud-value">RCC + STEEL</span>
+                </div>
+                <div class="hud-data-group status-group">
+                    <span class="hud-label">PROJECT STATUS</span>
+                    <span id="hud-status" class="hud-value status-active">UNDER CONSTRUCTION</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hud-sidebar-left">
+            <div class="hud-data-group vertical">
+                <span class="hud-label">CONSTRUCTION</span>
+                <span id="hud-progress-percent" class="hud-value large">00%</span>
+            </div>
+            <div class="hud-data-group vertical">
+                <span class="hud-label">CURRENT PHASE</span>
+                <span id="hud-current-phase" class="hud-value">SITE PREPARATION</span>
+            </div>
+            <div class="hud-data-group vertical">
+                <span class="hud-label">LEVEL</span>
+                <span id="hud-current-level" class="hud-value highlight">GROUND</span>
+            </div>
+            <div class="hud-data-group vertical">
+                <span class="hud-label">ELEVATION</span>
+                <span id="hud-elevation-marker" class="hud-value">+ 0.000m</span>
+            </div>
+        </div>
+
+        <div class="hud-sidebar-right controls-panel">
+            <span class="hud-label text-right">VIEWPORT CONTROLS</span>
+            <button id="toggle-blueprint" class="hud-btn" type="button" aria-pressed="false">BLUEPRINT MODE</button>
+            <button id="toggle-construction" class="hud-btn is-active" type="button" aria-pressed="true">CONSTRUCTION MODE</button>
+            <button id="toggle-architectural" class="hud-btn" type="button" aria-pressed="false">ARCHITECTURAL MODE</button>
+            <button id="toggle-sound" class="hud-btn icon-btn" type="button" aria-label="Toggle site acoustics">
+                <span class="sound-icon"></span> SITE ACOUSTICS
+            </button>
+        </div>
+
+        <!-- Dynamic Grid Markers / Coordinates -->
+        <div id="grid-coordinates" aria-hidden="true">
+            <span id="coord-x" class="coord-label">X: 0.00</span>
+            <span id="coord-y" class="coord-label">Y: 0.00</span>
+            <span id="coord-z" class="coord-label">Z: 0.00</span>
+        </div>
+        
+        <div id="camera-mode-indicator" class="hud-label">CAMERA: <span id="cam-state-text">AUTO-TRACKING</span></div>
+    </header>
+
+    <!-- ==================================================
+         MAIN SITE NAVIGATION
+    ================================================== -->
+    <nav id="site-navigation" aria-label="Construction Phases">
+        <div class="nav-track">
+            <div id="nav-progress-indicator"></div>
+        </div>
+        <ul class="nav-chapters">
+            <li><a href="#chapter-01" class="nav-link active" data-target="01"><span class="nav-num">01</span> SURVEY</a></li>
+            <li><a href="#chapter-04" class="nav-link" data-target="04"><span class="nav-num">04</span> FOUNDATION</a></li>
+            <li><a href="#chapter-06" class="nav-link" data-target="06"><span class="nav-num">06</span> STRUCTURE</a></li>
+            <li><a href="#chapter-08" class="nav-link" data-target="08"><span class="nav-num">08</span> PROJECTS</a></li>
+            <li><a href="#chapter-11" class="nav-link" data-target="11"><span class="nav-num">11</span> HYPERLOOP</a></li>
+            <li><a href="#chapter-12" class="nav-link" data-target="12"><span class="nav-num">12</span> LOGISTICS</a></li>
+            <li><a href="#chapter-16" class="nav-link" data-target="16"><span class="nav-num">16</span> HANDOVER</a></li>
+        </ul>
+    </nav>
+
+    <!-- ==================================================
+         SCROLL-DRIVEN CONSTRUCTION STORY
+    ================================================== -->
+    <main id="scroll-timeline">
+
+        <!-- 01 — SITE SURVEY -->
+        <section id="chapter-01" class="timeline-chapter" data-phase="SITE SURVEY" data-level="GROUND" data-camera="site-overview">
+            <article class="editorial-panel hero-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 01</span>
+                    <h2 class="phase-title">SITE SURVEY & MOBILIZATION</h2>
+                </div>
+                <div class="panel-content">
+                    <h1 class="project-title">AYUSH KUMAWAT</h1>
+                    <h3 class="project-subtitle">B.Tech Civil Engineering | VIT Vellore</h3>
+                    <p class="project-brief">Welcome to the construction site. This portfolio is engineered from the ground up to reflect a real-world architectural and structural workflow. Scroll to initiate site clearance and break ground.</p>
+                </div>
+            </article>
+        </section>
+
+        <!-- 02 — SITE CLEARANCE -->
+        <section id="chapter-02" class="timeline-chapter transition-chapter" data-phase="SITE CLEARANCE" data-level="GROUND" data-camera="survey">
+            <!-- JavaScript triggers earthworks & clearance -->
+        </section>
+
+        <!-- 03 — EXCAVATION -->
+        <section id="chapter-03" class="timeline-chapter transition-chapter" data-phase="EXCAVATION" data-level="SUB-GRADE" data-camera="excavation">
+            <!-- JavaScript triggers excavation visualization -->
+        </section>
+
+        <!-- 04 — FOUNDATION -->
+        <section id="chapter-04" class="timeline-chapter" data-phase="FOUNDATION" data-level="SUB-GRADE" data-camera="foundation">
+            <article class="editorial-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 04</span>
+                    <h2 class="phase-title">SUB-STRUCTURE & FOUNDATION</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="technical-data-block">
+                        <h3 class="data-heading">PROFILE / BASE PARAMETERS</h3>
+                        <ul class="data-list">
+                            <li><span class="data-key">ENGINEER</span> <span class="data-val">Ayush Kumawat</span></li>
+                            <li><span class="data-key">INSTITUTION</span> <span class="data-val">VIT Vellore</span></li>
+                            <li><span class="data-key">DEGREE</span> <span class="data-val">B.Tech Civil Engineering</span></li>
+                            <li><span class="data-key">GRADUATION</span> <span class="data-val">Class of 2029</span></li>
+                        </ul>
+                    </div>
+                    <div class="technical-data-block">
+                        <h3 class="data-heading">CORE INTERESTS</h3>
+                        <ul class="data-tags">
+                            <li>Structural Design</li>
+                            <li>Transportation Engineering</li>
+                            <li>AI/ML in Civil Engineering</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- 05 — FOOTINGS + REINFORCEMENT -->
+        <section id="chapter-05" class="timeline-chapter transition-chapter" data-phase="FOOTINGS & REINFORCEMENT" data-level="SUB-GRADE" data-camera="foundation">
+            <!-- JS triggers rebar placement -->
+        </section>
+
+        <!-- 06 — GROUND FLOOR COLUMNS -->
+        <section id="chapter-06" class="timeline-chapter" data-phase="GROUND FLOOR COLUMNS" data-level="L01" data-camera="ground-floor">
+            <article class="editorial-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 06</span>
+                    <h2 class="phase-title">STRUCTURAL FRAME ESTABLISHMENT</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="technical-data-block">
+                        <h3 class="data-heading">TECHNICAL SOFTWARE SKILLS</h3>
+                        <p class="data-description">Erecting the primary load-bearing elements requires precision tools. My drafting and analytical stack includes:</p>
+                        <ul class="technical-bar-chart">
+                            <li><span class="tool-name">AutoCAD</span></li>
+                            <li><span class="tool-name">Revit</span></li>
+                            <li><span class="tool-name">Fusion 360</span></li>
+                            <li><span class="tool-name">ANSYS</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- 07 — GROUND FLOOR BEAMS + SLAB -->
+        <section id="chapter-07" class="timeline-chapter transition-chapter" data-phase="BEAMS & SLAB CASTING" data-level="L01" data-camera="ground-floor">
+            <!-- JS triggers formwork, concrete pouring, curing -->
+        </section>
+
+        <!-- 08 — LEVEL 02 (Project 1) -->
+        <section id="chapter-08" class="timeline-chapter" data-phase="LEVEL 02 STRUCTURE" data-level="L02" data-camera="mid-rise">
+            <article class="editorial-panel project-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 08</span>
+                    <h2 class="phase-title">FLOOR L02: STRUCTURAL ANALYSIS</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="project-card">
+                        <h3 class="project-name">Concrete Strength Prediction using AI/ML</h3>
+                        <p class="project-role">Data Collection & Engineering Integration</p>
+                        <ul class="project-details">
+                            <li>Collected comprehensive concrete mix composition and rigorous laboratory test data.</li>
+                            <li>Collaborated with IT specialists, providing civil engineering parameters to build a robust linear regression model.</li>
+                            <li>Successfully established predictive capabilities for concrete strength based entirely on mix composition ratios.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- 09 — LEVEL 03 (Project 2) -->
+        <section id="chapter-09" class="timeline-chapter" data-phase="LEVEL 03 STRUCTURE" data-level="L03" data-camera="mid-rise">
+            <article class="editorial-panel project-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 09</span>
+                    <h2 class="phase-title">FLOOR L03: TRANSPORTATION</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="project-card">
+                        <h3 class="project-name">Traffic Volume & Rule-Compliance Analysis</h3>
+                        <p class="project-role">Research Assistant</p>
+                        <ul class="project-details">
+                            <li>Assisted university professor with detailed field research and data logging.</li>
+                            <li>Reviewed extensive CCTV footage for accurate vehicle classification and counting.</li>
+                            <li>Recorded critical data regarding traffic-rule compliance, specifically analyzing wrong-side driving occurrences.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- 10 — LEVEL 04 -->
+        <section id="chapter-10" class="timeline-chapter transition-chapter" data-phase="LEVEL 04 STRUCTURE" data-level="L04" data-camera="upper-floors">
+            <!-- Floor sequencing continues visually -->
+        </section>
+
+        <!-- 11 — LEVEL 05 (Hyperloop) -->
+        <section id="chapter-11" class="timeline-chapter" data-phase="LEVEL 05 TECHNOLOGY ZONE" data-level="L05" data-camera="upper-floors">
+            <article class="editorial-panel special-project-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 11</span>
+                    <h2 class="phase-title">FLOOR L05: INNOVATION & R&D</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="project-card highlight-card">
+                        <h3 class="project-name">TEAM LEVITATE HYPERLOOP</h3>
+                        <p class="project-role">Junior Core Member — Infrastructure Domain</p>
+                        <div class="domain-specs">
+                            <h4 class="specs-heading">ENGINEERING CONTRIBUTIONS</h4>
+                            <ul class="specs-list">
+                                <li>Chassis design and structural integrity analysis.</li>
+                                <li>LIM (Linear Induction Motor) and VFD battery strategic placement.</li>
+                                <li>Precision track design geometry.</li>
+                                <li>Future hyperloop tube conceptual design.</li>
+                                <li>Advanced material selection and testing.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- 12 — LEVEL 06 (Achievements) -->
+        <section id="chapter-12" class="timeline-chapter" data-phase="LEVEL 06 CONSTRUCTION" data-level="L06" data-camera="crane-operation">
+            <article class="editorial-panel list-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 12</span>
+                    <h2 class="phase-title">FLOOR L06: COMPETITIONS & METRICS</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="technical-data-block">
+                        <h3 class="data-heading">CEA FEST 2026 — IIT MADRAS</h3>
+                        <ul class="data-tags large-tags">
+                            <li>Seismic Tower Challenge</li>
+                            <li>Concrete Cornhole</li>
+                            <li>EcoFilter</li>
+                            <li>RouteX</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- 13 — LEVEL 07 (Workshops) -->
+        <section id="chapter-13" class="timeline-chapter" data-phase="LEVEL 07 TOPPING OUT" data-level="L07" data-camera="crane-operation">
+            <article class="editorial-panel list-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 13</span>
+                    <h2 class="phase-title">FLOOR L07: SITE LEADERSHIP</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="technical-data-block">
+                        <h3 class="data-heading">WORKSHOPS & COMMENDATIONS</h3>
+                        <ul class="commendation-list">
+                            <li>
+                                <span class="award-title">DesignForge</span>
+                                <span class="award-desc">Revit workshop and competition at VIT Vellore</span>
+                            </li>
+                            <li>
+                                <span class="award-title">Certificate of Appreciation</span>
+                                <span class="award-desc">Awarded by Head of Department (HOD)</span>
+                            </li>
+                            <li>
+                                <span class="award-title">Research Commendation</span>
+                                <span class="award-desc">Professor appreciation certificate for traffic study</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- 14 — ROOF + PARAPET -->
+        <section id="chapter-14" class="timeline-chapter transition-chapter" data-phase="ROOF & PARAPET" data-level="ROOF" data-camera="roof">
+            <!-- JS finishes structural frame -->
+        </section>
+
+        <!-- 15 — FACADE INSTALLATION -->
+        <section id="chapter-15" class="timeline-chapter transition-chapter" data-phase="FACADE INSTALLATION" data-level="BUILDING EXTERIOR" data-camera="facade">
+            <!-- JS animates glass curtain walls, louvers, exterior cladding -->
+        </section>
+
+        <!-- 16 — FINAL ARCHITECTURAL REVEAL -->
+        <section id="chapter-16" class="timeline-chapter" data-phase="FINAL HANDOVER" data-level="COMPLETE" data-camera="final-overview">
+            <article class="editorial-panel contact-panel">
+                <div class="panel-header">
+                    <span class="phase-id">PHASE 16</span>
+                    <h2 class="phase-title">ARCHITECTURAL REVEAL & HANDOVER</h2>
+                </div>
+                <div class="panel-content">
+                    <h3 class="handover-title">PROJECT COMPLETE</h3>
+                    <p class="handover-desc">The structural frame is set. The facade is sealed. The architecture stands complete. Ready for new developments and engineering challenges.</p>
+                    
+                    <div class="contact-card">
+                        <h4 class="contact-heading">SITE OFFICE / CONTACT</h4>
+                        <address class="contact-info">
+                            <div class="contact-row">
+                                <span class="contact-method">ENGINEER</span>
+                                <strong class="contact-detail">AYUSH KUMAWAT</strong>
+                            </div>
+                            <div class="contact-row">
+                                <span class="contact-method">EMAIL</span>
+                                <a href="mailto:ayush.jalindra@gmail.com" class="contact-detail link">ayush.jalindra@gmail.com</a>
+                            </div>
+                            <div class="contact-row">
+                                <span class="contact-method">PHONE</span>
+                                <a href="tel:+916350624065" class="contact-detail link">+91 63506 24065</a>
+                            </div>
+                            <div class="contact-row">
+                                <span class="contact-method">LOCATION</span>
+                                <span class="contact-detail">VIT Vellore</span>
+                            </div>
+                        </address>
+                        <button class="primary-btn download-cv">DOWNLOAD TECHNICAL DOSSIER (CV)</button>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+    </main>
+
+    <!-- External scripts loaded deferent to ensure HTML parsing completes -->
+    <script src="script.js" defer></script>
+</body>
+</html>
